@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: deploy-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: deploy
+        image: dtzar/helm-kubectl
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            mkdir -p /etc/config &&
+            echo "$KUBE_CRT" > /etc/config/ca.crt &&
+            kubectl config set-cluster default --server="$KUBE_URL" --certificate-authority=/etc/config/ca.crt &&
+            kubectl config set-credentials gitlab-deployer --token="$KUBE_TOKEN" &&
+            kubectl config set-context default --cluster=default --user=gitlab-deployer &&
+            kubectl config use-context default &&
+            helm repo add stable https://charts.helm.sh/stable &&
+            helm repo update &&
+            echo "Deploying to Kubernetes..." &&
+            # helm upgrade --install test-app-1 http://localhost:15023/helm/repos/my-repo/test-app-1.0.0.tgz --set image.repository="$CI_REGISTRY_IMAGE",image.tag="$CI_COMMIT_REF_SLUG"
+            exit_code=$?
+            if [ $exit_code -eq 0 ]; then
+              echo "Deploy successful"
+              exit 0
+            else
+              echo "Deploy failed"
+              exit 1
+            fi
+      restartPolicy: Never

@@ -1,0 +1,44 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: unit-tests
+spec:
+  template:
+    spec:
+      initContainers:
+      - name: clone-repo
+        image: alpine/git
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            echo "Cloning the repository..."
+            git clone http://oauth2:glpat-1EWzEpgmcfMPsN3d2NYo@192.168.59.1/root/hello-world.git /workspace && echo "Repository cloned successfully" || echo "Failed to clone the repository"
+            ls -alh /workspace
+        volumeMounts:
+        - name: repo-volume
+          mountPath: /workspace
+      containers:
+      - name: test-app-1-tests
+        image: node:18
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            cd workspace
+            npm i
+            npm run test
+            exit_code=$?
+            if [ $exit_code -eq 0 ]; then
+              echo "Tests run successful"
+              exit 0
+            else
+              echo "Tests failed"
+              exit 1
+            fi
+        volumeMounts:
+        - name: repo-volume
+          mountPath: /workspace
+      volumes:
+      - name: repo-volume
+        emptyDir: {}
+      restartPolicy: Never
+  backoffLimit: 4

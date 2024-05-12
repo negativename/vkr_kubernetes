@@ -1,0 +1,30 @@
+[ req ]
+default_bits       = 4096
+distinguished_name = req_distinguished_name
+req_extensions     = req_ext
+x509_extensions    = v3_ca
+prompt             = no
+
+[ req_distinguished_name ]
+C = US
+ST = YourState
+L = YourCity
+O = YourOrganization
+OU = YourOrganizationalUnit
+CN = 192.168.59.1
+
+[ req_ext ]
+subjectAltName = @alt_names
+
+[ v3_ca ]
+subjectAltName = @alt_names
+basicConstraints = CA:TRUE
+keyUsage = digitalSignature, keyEncipherment, keyCertSign
+extendedKeyUsage = serverAuth, clientAuth
+
+[ alt_names ]
+DNS.1   = local.docker.registry
+IP.1    = 192.168.59.1
+
+[ ca ]
+default_ca = CA_default

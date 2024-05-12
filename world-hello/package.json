@@ -1,0 +1,17 @@
+{
+  "name": "test-app-2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "amqplib": "^0.10.4",
+    "express": "^4.19.2",
+    "redis": "^4.6.13"
+  },
+  "author": "",
+  "license": "ISC"
+}

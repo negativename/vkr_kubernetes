@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: gitlab-ci-token-manual
+  namespace: kube-system
+  annotations:
+    kubernetes.io/service-account.name: gitlab-ci
+type: kubernetes.io/service-account-token
